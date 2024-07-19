@@ -26,13 +26,16 @@ picam2.start()
 sleep(2)
 
 def main():
+    global x, y
     status = True
     frame_count = 0
     while (status):
         # Get a frame
         frame = picam2.capture_array("main")
         # Convert frame to Pygame surface
-        surface = pygame.image.frombuffer(frame.tostring(), frame.shape[1::-1], "BGR")
+        # surface = pygame.image.frombuffer(frame.tostring(), frame.shape[1::-1], "BGR")
+        # Alternative approach (neater, but no faster?)
+        surface = pygame.image.frombuffer(frame.data, (x, y), 'RGB')
         # Blit surface to screen
         screen.blit(surface, (0, 0))
         pygame.display.update()
