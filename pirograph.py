@@ -1,6 +1,6 @@
 import pygame
 from picamera2 import Picamera2, Preview
-from time import sleep
+from time import time, sleep
 import numpy as np
 
 
@@ -38,8 +38,12 @@ pygame.event.set_allowed([pygame.KEYDOWN, pygame.QUIT])
 # System status
 running = True
 
+
 def capture_frame():
-    """Grab a camera frame and return a pygame surface."""
+    """Grab a camera frame and return a pygame surface.
+
+    Doesn't seem to affect performance - we're presumably passing the
+    surface object reference rather than copying it."""
     global screen
     global width, height
     global picam2
@@ -60,10 +64,29 @@ def handle_inputs():
         else:
             pass
 
+def frame_stats(time_begin, time_start, frame_count, sample_window = 1):
+    """Output frame statistics.
+
+    Note that the variable passing seems to have a minor performance impact,
+    though this is negligible on a five-frame window. Could be related to
+    terminal scrollback?"""
+    time_now = time()
+    time_taken = (time_now - time_start) / sample_window
+    time_since_begin = time_now - time_begin
+    frame_rate = frame_count / time_since_begin
+    print (f"Frame {frame_count} in {time_taken:.3f} secs (5-frame rolling average), at {frame_rate:.2f} fps.")
+    # Original telemetry, for reference
+    # print "Frame %d in %.3f secs, at %.2f fps: shutter: %d, low: %d high: %d" % (frame_count, time_taken, (frame_count/time_since_begin), camera.shutter_speed, threshold_low, threshold_high)
+
 
 def main():
+    # Take a timestamp for the start of the run.
+    # Note that the camera is already set up
+    time_begin = time()
     frame_count = 0
     while (running):
+        # Timestamp for the start of this frame
+        time_start = time()
         surface = capture_frame()
         screen.blit(surface, (0, 0))
         pygame.display.update()
@@ -72,9 +95,9 @@ def main():
         # Check inputs every five frames only, might be quicker
         # (or might give a horrid update cadence, we'll see)
         if frame_count % 5 == 0:
+            frame_stats(time_begin, time_start, frame_count, 5)
             handle_inputs()
 
-        print(f"Displayed frame: {frame_count}")
 
 if __name__ == "__main__":
     main()
