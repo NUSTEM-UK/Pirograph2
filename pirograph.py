@@ -13,17 +13,9 @@ width, height = 1280, 720
 # Instantiate the camera
 picam2 = Picamera2()
 
-# Configure camera capture settings
-# Here, using same settings for preview and capture
-
-camera_controls = {
-    "ExposureTime": 10000,
-    "AnalogueGain": 1.0
-}
-
 # capture_config = picam2.create_still_configuration({"size": (width, height)}, controls=camera_controls)
 capture_config = picam2.create_still_configuration({"size": (width, height)})
-preview_config = picam2.create_still_configuration({"size": (width, height)}, controls=camera_controls)
+preview_config = picam2.create_still_configuration({"size": (width, height)})
 picam2.configure(capture_config)
 
 # Start the camera
@@ -34,15 +26,14 @@ picam2.start()
 sleep(2)
 
 # Capture the camera settings
-# Using `with` to grab settings from same frame
-with picam2.controls as ctrl_capture:
-    analogue_gain = ctrl_capture.AnalogueGain
-    exposure_time = ctrl_capture.ExposureTime
+metadata = picam2.capture_metadata()
+controls = {c: metadata[c] for c in ["ExposureTime", "AnalogueGain"]}
 
-# Lock the exposure
+# Lock the exposure, using the object syntax
 exposure_controls = Controls(picam2)
-exposure_controls.AnalaogueGain = analogue_gain
-exposure_controls.ExposureTime = exposure_time
+exposure_controls.AnalogueGain = controls["AnalogueGain"]
+exposure_controls.ExposureTime = controls["ExposureTime"]
+picam2.set_controls(exposure_controls)
 
 # Now configure the PyGame environment
 pygame.init()
@@ -85,16 +76,13 @@ def handle_inputs():
 
 
 def change_exposure():
+    global picam2
     global exposure_controls
     exposure_controls.ExposureTime += 1000
-    # picam2.set_controls({"ExposureTime": 10000, "AnalogueGain": 1.0})
-    # print("Exposure!")
-    # Object syntax (see Picamera2 docs section 5.1.2)
-    # Using `with` to ensure changes made on the same frame (which might be delayed,
-    # but will at least be simultaneous)
-    # with picam2.controls as controls:
-    #     controls.ExposureTime = 10000
-    #     controls.AnalogueGain = 1.0
+    exposure_controls.AnalogueGain += 0.1
+    picam2.set_controls(exposure_controls)
+    print(exposure_controls.ExposureTime, exposure_controls.AnalogueGain)
+
 
 
 def output_exposure():
