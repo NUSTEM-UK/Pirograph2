@@ -7,7 +7,7 @@ pygame.init()
 x = 1280
 y = 800
 
-# Check the syntax here - what's the zero?
+# TODO: Check the syntax here - what's the zero?
 screen = pygame.display.set_mode((x, y), 0, 32)
 
 pygame.display.set_caption("Pirograph")
