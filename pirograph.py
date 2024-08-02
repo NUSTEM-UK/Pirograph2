@@ -1,5 +1,6 @@
 import pygame
 from picamera2 import Picamera2, Preview
+from picamera2.controls import Controls
 from time import time, sleep
 import numpy as np
 
@@ -17,8 +18,7 @@ picam2 = Picamera2()
 
 camera_controls = {
     "ExposureTime": 10000,
-    "AnalogueGain": 1.0,
-    "Contrast": 2
+    "AnalogueGain": 1.0
 }
 
 # capture_config = picam2.create_still_configuration({"size": (width, height)}, controls=camera_controls)
@@ -34,7 +34,15 @@ picam2.start()
 sleep(2)
 
 # Capture the camera settings
+# Using `with` to grab settings from same frame
+with picam2.controls as ctrl_capture:
+    analogue_gain = ctrl_capture.AnalogueGain
+    exposure_time = ctrl_capture.ExposureTime
 
+# Lock the exposure
+exposure_controls = Controls(picam2)
+exposure_controls.AnalaogueGain = analogue_gain
+exposure_controls.ExposureTime = exposure_time
 
 # Now configure the PyGame environment
 pygame.init()
@@ -77,9 +85,10 @@ def handle_inputs():
 
 
 def change_exposure():
-    global picam2
-    picam2.set_controls({"ExposureTime": 10000, "AnalogueGain": 1.0})
-    print("Exposure!")
+    global exposure_controls
+    exposure_controls.ExposureTime += 1000
+    # picam2.set_controls({"ExposureTime": 10000, "AnalogueGain": 1.0})
+    # print("Exposure!")
     # Object syntax (see Picamera2 docs section 5.1.2)
     # Using `with` to ensure changes made on the same frame (which might be delayed,
     # but will at least be simultaneous)
@@ -130,8 +139,8 @@ def main():
         if frame_count % 5 == 0:
             frame_stats(time_begin, time_start, frame_count, 5)
             handle_inputs()
-            # change_exposure()
-            output_exposure()
+            change_exposure()
+            # output_exposure()
 
 
 if __name__ == "__main__":
