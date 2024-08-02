@@ -32,7 +32,7 @@ screen = pygame.display.set_mode((width, height), 0, 32)
 pygame.display.set_caption("Pirograph")
 # Disable Pygame events...
 pygame.event.set_allowed(None)
-# ...and selectively re-enable them
+# ...and selectively re-enable the ones we actually want
 pygame.event.set_allowed([pygame.KEYDOWN, pygame.QUIT])
 
 # System status
