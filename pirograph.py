@@ -76,6 +76,7 @@ def handle_inputs():
 
 
 def change_exposure():
+    """Testing that I have this right."""
     global picam2
     global exposure_controls
     exposure_controls.ExposureTime += 1000
@@ -86,6 +87,9 @@ def change_exposure():
 
 
 def output_exposure():
+    """It looks like the object methods don't return properties.
+
+    ...so this is the best way of doing this. Now rolled into the startup code."""
     global picam2
     metadata = picam2.capture_metadata()
     controls = {c: metadata[c] for c in ["ExposureTime", "AnalogueGain"]}
