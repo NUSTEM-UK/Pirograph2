@@ -14,8 +14,16 @@ picam2 = Picamera2()
 
 # Configure camera capture settings
 # Here, using same settings for preview and capture
+
+camera_controls = {
+    "ExposureTime": 10000,
+    "AnalogueGain": 1.0,
+    "Contrast": 2
+}
+
+# capture_config = picam2.create_still_configuration({"size": (width, height)}, controls=camera_controls)
 capture_config = picam2.create_still_configuration({"size": (width, height)})
-preview_config = picam2.create_still_configuration({"size": (width, height)})
+preview_config = picam2.create_still_configuration({"size": (width, height)}, controls=camera_controls)
 picam2.configure(capture_config)
 
 # Start the camera
@@ -64,6 +72,26 @@ def handle_inputs():
         else:
             pass
 
+
+def change_exposure():
+    global picam2
+    picam2.set_controls({"ExposureTime": 10000, "AnalogueGain": 1.0})
+    print("Exposure!")
+    # Object syntax (see Picamera2 docs section 5.1.2)
+    # Using `with` to ensure changes made on the same frame (which might be delayed,
+    # but will at least be simultaneous)
+    # with picam2.controls as controls:
+    #     controls.ExposureTime = 10000
+    #     controls.AnalogueGain = 1.0
+
+
+def output_exposure():
+    global picam2
+    metadata = picam2.capture_metadata()
+    controls = {c: metadata[c] for c in ["ExposureTime", "AnalogueGain"]}
+    print(controls)
+
+
 def frame_stats(time_begin, time_start, frame_count, sample_window = 1):
     """Output frame statistics.
 
@@ -97,6 +125,8 @@ def main():
         if frame_count % 5 == 0:
             frame_stats(time_begin, time_start, frame_count, 5)
             handle_inputs()
+            # change_exposure()
+            output_exposure()
 
 
 if __name__ == "__main__":
