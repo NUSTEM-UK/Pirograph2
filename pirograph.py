@@ -33,6 +33,9 @@ picam2.start()
 # Give the camera a couple of seconds to sort itself out
 sleep(2)
 
+# Capture the camera settings
+
+
 # Now configure the PyGame environment
 pygame.init()
 # TODO: I'm not sure what the 0 is in the following line
@@ -90,6 +93,8 @@ def output_exposure():
     metadata = picam2.capture_metadata()
     controls = {c: metadata[c] for c in ["ExposureTime", "AnalogueGain"]}
     print(controls)
+    # Result is about 30000 for ExposureTime, 2.0 for AnalaogueGain
+    # Looks like the gain varies preferentially for the autoexposure system
 
 
 def frame_stats(time_begin, time_start, frame_count, sample_window = 1):
