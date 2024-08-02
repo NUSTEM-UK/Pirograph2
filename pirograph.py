@@ -37,7 +37,7 @@ def handle_inputs():
             pass
 
 
-def frame_stats(time_begin, time_start, frame_count, sample_window = 1):
+def frame_stats(time_begin, time_start, frame_count, sample_window=1):
     """Output frame statistics.
 
     Note that the variable passing seems to have a minor performance impact,
@@ -47,7 +47,9 @@ def frame_stats(time_begin, time_start, frame_count, sample_window = 1):
     time_taken = (time_now - time_start) / sample_window
     time_since_begin = time_now - time_begin
     frame_rate = frame_count / time_since_begin
-    print (f"Frame {frame_count} in {time_taken:.3f} secs (5-frame rolling average), at {frame_rate:.2f} fps.")
+    print(
+        f"Frame {frame_count} in {time_taken:.3f} secs (5-frame rolling average), at {frame_rate:.2f} fps."
+    )
     # Original telemetry, for reference
     # print "Frame %d in %.3f secs, at %.2f fps: shutter: %d, low: %d high: %d" % (frame_count, time_taken, (frame_count/time_since_begin), camera.shutter_speed, threshold_low, threshold_high)
 
@@ -57,7 +59,7 @@ def main():
     # Note that the camera is already set up
     time_begin = time()
     frame_count = 0
-    while (running):
+    while running:
         # Timestamp for the start of this frame
         time_start = time()
         surface = pirocam.capture_frame()
@@ -72,10 +74,8 @@ def main():
             handle_inputs()
             current_gain = pirocam.analogue_gain
             # Increase exposure
-            pirocam.analogue_gain = (current_gain + 0.1)
+            pirocam.analogue_gain = current_gain + 0.1
 
 
 if __name__ == "__main__":
     main()
-
-

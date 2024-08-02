@@ -6,7 +6,6 @@ from time import sleep
 
 # Factor out camera control and operations from pirograph.py as a PirographCam class
 
-
 class PirographCam:
     def __init__(self, width=1280, height=720):
         """Initialize the camera and set up initial exposure settings."""
