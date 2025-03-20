@@ -72,6 +72,7 @@ def main():
         # (or might give a horrid update cadence, we'll see)
         if frame_count % frame_window == 0:
             frame_stats(time_begin, time_start, frame_count, frame_window)
+            # Interestingly, input handling seems to be worth around 3 fps
             # handle_inputs()
             current_gain = pirocam.analogue_gain
             # Increase exposure
