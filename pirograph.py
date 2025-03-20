@@ -48,7 +48,7 @@ def frame_stats(time_begin, time_start, frame_count, sample_window=1):
     time_since_begin = time_now - time_begin
     frame_rate = frame_count / time_since_begin
     print(
-        f"Frame {frame_count} in {time_taken:.3f} secs (5-frame rolling average), at {frame_rate:.2f} fps."
+        f"Frame {frame_count} in {time_taken:.3f} secs ({sample_window}-frame rolling average), at {frame_rate:.2f} fps."
     )
     # Original telemetry, for reference
     # print "Frame %d in %.3f secs, at %.2f fps: shutter: %d, low: %d high: %d" % (frame_count, time_taken, (frame_count/time_since_begin), camera.shutter_speed, threshold_low, threshold_high)
@@ -59,6 +59,7 @@ def main():
     # Note that the camera is already set up
     time_begin = time()
     frame_count = 0
+    frame_window = 10
     while running:
         # Timestamp for the start of this frame
         time_start = time()
@@ -69,8 +70,8 @@ def main():
 
         # Check inputs every five frames only, might be quicker
         # (or might give a horrid update cadence, we'll see)
-        if frame_count % 5 == 0:
-            frame_stats(time_begin, time_start, frame_count, 5)
+        if frame_count % frame_window == 0:
+            frame_stats(time_begin, time_start, frame_count, frame_window)
             handle_inputs()
             current_gain = pirocam.analogue_gain
             # Increase exposure
